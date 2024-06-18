@@ -16,19 +16,21 @@ SHEET = GSPREAD_CLIENT.open('smart-budget')
 VALID_CATEGORIES = ["Housing", "Transport", "Food", "Entertainment", "Savings"]
 
 
-"""
-Asks the user to enter a category and a budget limit.
-Adds budget data to the 'budget' worksheet.
-Displays an error if the user enters anything other than a number or invalid category.
-"""
 def set_budget():
+    """
+    Asks the user to enter a category and a budget limit.
+    Adds budget data to the 'budget' worksheet.
+    Displays an error if the user enters anything other than a number or invalid category.
+    """
     while True:
+        print("-" * 40)
         category = input("Enter the category (Housing, Transport, Food, Entertainment, Savings):\n")
         if category in VALID_CATEGORIES:
             break
         else:
             print("Invalid category. Please choose from Housing, Transport, Food, Entertainment, Savings.")
     while True:
+        print("-" * 40)
         try:
             limit = float(input(f"Enter the budget limit for {category}:\n"))
             break
@@ -40,12 +42,12 @@ def set_budget():
     print(f"Budget limit for {category} set to {limit}")
 
 
-"""
-Asks the user to enter transaction details.
-Send all of the information to Google Sheets worksheet.
-Includes error handling: transaction type, category, amount.
-"""
 def add_transaction():
+    """
+    Asks the user to enter transaction details.
+    Send all of the information to Google Sheets worksheet.
+    Includes error handling: transaction type, category, amount.
+    """
     while True:
         date = input("Enter the date (YYYY-MM-DD): ")
         if len(date) == 10 and date[4] == '-' and date[7] == '-':
@@ -80,12 +82,28 @@ def add_transaction():
     print("Transaction added successfully!")
 
 
-"""
-Main function. Handles menu and user choices.
-Provides options to set budget, add transaction, update transaction, delete transaction, view transactions, and generate report.
-"""
+def view_transactions():
+    """
+    Fetches and displays all transaction records from the 'transactions' worksheet.
+    """
+    transactions = SHEET.worksheet("transactions").get_all_records()
+    for transaction in transactions:
+        print("-" * 40)
+        print(f"Date: {transaction['Date']}")
+        print(f"Type: {transaction['Type']}")
+        print(f"Category: {transaction['Category']}")
+        print(f"Amount: {transaction['Amount']}")
+        print(f"Description: {transaction['Description']}")
+        print("-" * 40)
+
+
 def main():
+    """
+    Main function. Handles menu and user choices.
+    Provides options to set budget, add transaction, update transaction, delete transaction, view transactions, and generate report.
+    """
     while True:
+        print("-" * 40)
         print("1. Set budget")
         print("2. Add transaction")
         print("3. Update transaction")
@@ -93,8 +111,9 @@ def main():
         print("5. View transaction")
         print("6. Generate report")
         print("7. Exit")
+        print("-" * 40)
 
-        choice = input("\nEnter your choice: ")
+        choice = input("Enter your choice: ")
         if choice == "1":
             set_budget()
         elif choice == "2":
@@ -104,14 +123,15 @@ def main():
         elif choice == "4":
             pass 
         elif choice == "5":
-            pass  
+            view_transactions()  
         elif choice == "6":
             pass  
         elif choice == "7":
+            print("-" * 40)
             print("Goodbye!")
             break
         else:
             print("Invalid choice. Please try again.")
 
-print("Welcome to Smart Budget!\n")
+print("Welcome to Smart Budget!")
 main()
