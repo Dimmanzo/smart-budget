@@ -15,6 +15,7 @@ SHEET = GSPREAD_CLIENT.open('smart-budget')
 
 VALID_CATEGORIES = ["Housing", "Transport", "Food", "Entertainment", "Savings"]
 
+
 """
 Asks the user to enter a category and a budget limit.
 Adds budget data to the 'budget' worksheet.
@@ -40,6 +41,46 @@ def set_budget():
 
 
 """
+Asks the user to enter transaction details.
+Send all of the information to Google Sheets worksheet.
+Includes error handling: transaction type, category, amount.
+"""
+def add_transaction():
+    while True:
+        date = input("Enter the date (YYYY-MM-DD): ")
+        if len(date) == 10 and date[4] == '-' and date[7] == '-':
+            break
+        else:
+            print("Invalid date format. Please enter the date in YYYY-MM-DD format.")
+    
+    while True:
+        transaction_type = input("Enter the type (Income/Expense): ")
+        if transaction_type in ["Income", "Expense"]:
+            break
+        else:
+            print("Invalid type. Please enter either 'Income' or 'Expense'.")
+    
+    while True:
+        category = input("Enter the category (Housing, Transport, Food, Entertainment, Savings): ")
+        if category in VALID_CATEGORIES:
+            break
+        else:
+            print("Invalid category. Please choose from Housing, Transport, Food, Entertainment, Savings.")
+    
+    while True:
+        try:
+            amount = float(input("Enter the amount: "))
+            break
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+
+    description = input("Enter the description: ")
+    worksheet = SHEET.worksheet("transactions")
+    worksheet.append_row([date, transaction_type, category, amount, description])
+    print("Transaction added successfully!")
+
+
+"""
 Main function. Handles menu and user choices.
 Provides options to set budget, add transaction, update transaction, delete transaction, view transactions, and generate report.
 """
@@ -57,7 +98,7 @@ def main():
         if choice == "1":
             set_budget()
         elif choice == "2":
-            pass
+            add_transaction()
         elif choice == "3":
             pass  
         elif choice == "4":
