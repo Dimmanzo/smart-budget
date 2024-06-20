@@ -14,7 +14,8 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('smart-budget')
 
-VALID_CATEGORIES = ["Housing", "Transport", "Food", "Entertainment", "Savings"]
+INCOME_CATEGORIES = {"W": "Wage", "S": "Savings", "O": "Other"}
+EXPENSE_CATEGORIES = {"H": "Housing", "T": "Transport", "F": "Food", "E": "Entertainment"}
 
 
 def get_transactions():
@@ -72,18 +73,27 @@ def add_transaction():
             print("Invalid date format. Please enter the date in YYYY-MM-DD format.")
     
     while True:
-        transaction_type = input("Enter the type (Income/Expense): ")
-        if transaction_type in ["Income", "Expense"]:
+        transaction_type = input("Enter the type (I for Income, E for Expense): ").upper()
+        if transaction_type in ["I", "E"]:
+            if transaction_type == "I":
+                transaction_type = "income"
+                categories = INCOME_CATEGORIES
+                print("Choose a category: Wage (W), Savings (S), Other (O)")
+            else:
+                transaction_type = "expense"
+                categories = EXPENSE_CATEGORIES
+                print("Choose a category: Housing (H), Transport (T), Food (F), Entertainment (E)")
             break
         else:
-            print("Invalid type. Please enter either 'Income' or 'Expense'.")
+            print("Invalid type. Please enter I for Income or E for Expense.")
     
     while True:
-        category = input("Enter the category (Housing, Transport, Food, Entertainment, Savings): ")
-        if category in VALID_CATEGORIES:
+        category_key = input("Enter the category: ").upper()
+        if category_key in categories:
+            category = categories[category_key]
             break
         else:
-            print("Invalid category. Please choose from Housing, Transport, Food, Entertainment, Savings.")
+            print(f"Invalid category. Please choose from {', '.join(categories.keys())}.")
     
     while True:
         try:
