@@ -42,6 +42,16 @@ def set_budget():
     print(f"Budget limit for {category} set to {limit}")
 
 
+def get_transactions():
+    """
+    Gets all transaction records from the worksheet.
+    Returns the list of transactions.
+    """
+    worksheet = SHEET.worksheet("transactions")
+    transactions = worksheet.get_all_records()
+    return transactions
+
+
 def add_transaction():
     """
     Asks the user to enter transaction details.
@@ -94,7 +104,6 @@ def view_transactions():
         print(f"Category: {transaction['Category']}")
         print(f"Amount: {transaction['Amount']}")
         print(f"Description: {transaction['Description']}")
-        print("-" * 40)
 
 
 def main():
@@ -119,7 +128,7 @@ def main():
         elif choice == "2":
             add_transaction()
         elif choice == "3":
-            pass  
+            pass   
         elif choice == "4":
             pass 
         elif choice == "5":
