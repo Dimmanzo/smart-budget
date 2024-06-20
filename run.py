@@ -16,6 +16,16 @@ SHEET = GSPREAD_CLIENT.open('smart-budget')
 VALID_CATEGORIES = ["Housing", "Transport", "Food", "Entertainment", "Savings"]
 
 
+def get_transactions():
+    """
+    Gets all transaction records from the worksheet.
+    Returns the list of transactions.
+    """
+    worksheet = SHEET.worksheet("transactions")
+    transactions = worksheet.get_all_records()
+    return transactions
+
+
 def set_budget():
     """
     Asks the user to enter a category and a budget limit.
@@ -40,16 +50,6 @@ def set_budget():
     worksheet = SHEET.worksheet("budget")
     worksheet.append_row([category, limit])
     print(f"Budget limit for {category} set to {limit}")
-
-
-def get_transactions():
-    """
-    Gets all transaction records from the worksheet.
-    Returns the list of transactions.
-    """
-    worksheet = SHEET.worksheet("transactions")
-    transactions = worksheet.get_all_records()
-    return transactions
 
 
 def add_transaction():
@@ -92,6 +92,18 @@ def add_transaction():
     print("Transaction added successfully!")
 
 
+def update_transaction():
+    """
+
+    """
+
+
+def delete_transaction():
+    """
+
+    """
+
+
 def view_transactions():
     """
     Fetches and displays all transaction records from the 'transactions' worksheet.
@@ -106,6 +118,37 @@ def view_transactions():
         print(f"Description: {transaction['Description']}")
 
 
+def generate_report():
+    """
+
+    """
+
+
+def transactions_menu():
+    """
+
+    """
+    while True:
+        print("-" * 40)
+        print("Transactions Menu:")
+        print("1. Add transaction")
+        print("2. Delete transaction")
+        print("3. View Transactions")
+        print("4. Back")
+        print("-" * 40)
+
+        choice = input("Enter your choice: ")
+        if choice == "1":
+            add_transaction()
+        elif choice == "2":
+            pass
+        elif choice == "3":
+            view_transactions()    
+        elif choice == "4":
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
 def main():
     """
     Main function. Handles menu and user choices.
@@ -114,28 +157,19 @@ def main():
     while True:
         print("-" * 40)
         print("1. Set budget")
-        print("2. Add transaction")
-        print("3. Update transaction")
-        print("4. Delete transaction")
-        print("5. View transaction")
-        print("6. Generate report")
-        print("7. Exit")
+        print("2. View/Edit transactions")
+        print("3. Generate report")
+        print("4. Exit")
         print("-" * 40)
 
         choice = input("Enter your choice: ")
         if choice == "1":
             set_budget()
         elif choice == "2":
-            add_transaction()
+            transactions_menu()
         elif choice == "3":
-            pass   
+            pass    
         elif choice == "4":
-            pass 
-        elif choice == "5":
-            view_transactions()  
-        elif choice == "6":
-            pass  
-        elif choice == "7":
             print("-" * 40)
             print("Goodbye!")
             break
