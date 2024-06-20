@@ -1,5 +1,6 @@
 import gspread
 from google.oauth2.service_account import Credentials
+from datetime import datetime 
 
 # Google Sheets
 SCOPE = [
@@ -56,13 +57,18 @@ def add_transaction():
     """
     Asks the user to enter transaction details.
     Send all of the information to Google Sheets worksheet.
+    Automatically uses today's date if user presses enter.
     Includes error handling: transaction type, category, amount.
     """
     while True:
-        date = input("Enter the date (YYYY-MM-DD): ")
-        if len(date) == 10 and date[4] == '-' and date[7] == '-':
+        date = input("Enter the date (YYYY-MM-DD) or press 'Enter' for today's date: ")
+        if not date:
+            date = datetime.today().strftime("%Y-%m-%d")
             break
-        else:
+        try:
+            datetime.strptime(date, "%Y-%m-%d")
+            break
+        except ValueError:
             print("Invalid date format. Please enter the date in YYYY-MM-DD format.")
     
     while True:
@@ -175,6 +181,7 @@ def main():
             break
         else:
             print("Invalid choice. Please try again.")
+
 
 print("Welcome to Smart Budget!")
 main()
