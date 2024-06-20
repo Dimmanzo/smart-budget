@@ -59,7 +59,7 @@ def add_transaction():
     Asks the user to enter transaction details.
     Send all of the information to Google Sheets worksheet.
     Automatically uses today's date if user presses enter.
-    Includes error handling: transaction type, category, amount.
+    Includes error handling, handles single key inputs for transaction type and category selection.
     """
     while True:
         date = input("Enter the date (YYYY-MM-DD) or press 'Enter' for today's date: ")
@@ -110,8 +110,58 @@ def add_transaction():
 
 def update_transaction():
     """
-
+    Asks the user to enter the date of the transaction to update.
+    Find and updates transaction in 'transactions' worksheet.
+    Handles invalid date format, transaction type, category and non-numeric amount.
     """
+    while True:
+        date = input("Enter the date of the transaction to update (YYYY-MM-DD): ")
+        try:
+            datetime.strptime(date, "%Y-%m-%d")
+            break
+        except ValueError:
+            print("Invalid date format. Please enter the date in YYYY-MM-DD format.")
+
+    transcations = get_transactions()
+    worksheet = SHEET.worksheet("transactions")
+    for i, transaction in enumerate(transcations):
+        if transaction["Date"] == date:
+            print(f"Found transaction: {transaction}")
+            while True:
+                transaction_type = input("Enter the new type (I for Income, E for Expense): ").upper()
+                if transaction_type in ["I", "E"]:
+                    if transaction_type == "I":
+                        transaction_type = "income"
+                        categories = INCOME_CATEGORIES
+                        print("Choose a new category: Wage (W), Savings (S), Other (O)")
+                    else:
+                        transaction_type = "expense"
+                        categories = EXPENSE_CATEGORIES
+                        print("Choose a new category: Housing (H), Transport (T), Food (F), Entertainment (E)")
+                    break
+                else:
+                    print("Invalid type. Please enter I for Income or E for Expense.")
+
+            while True:
+               category_key = input("Enter the new category: ").upper()
+               if category_key in categories:
+                category = categories[category_key]
+                break
+            else:
+                print(f"Invalid category. Please choose from {', '.join(categories.keys())}.") 
+
+            while True:
+                try:
+                    amount = float(input("Enter the new amount: "))
+                    break
+                except ValueError:
+                    print("Invalid input. Please enter a number for the amount.")
+
+            description = input("Enter the new description: ")
+            worksheet.update(range_name=f'A{i+2}:E{i+2}', values=[[date, transaction_type, category, amount, description]])
+            print("Transaction updated successfully!")
+            return
+    print("Transaction not found.")
 
 
 def delete_transaction():
@@ -142,25 +192,29 @@ def generate_report():
 
 def transactions_menu():
     """
-
+    Sub-menu for viewing and editing transactions.
+    Provides options to add, delete, view transactions, or go back to the main menu.
     """
     while True:
         print("-" * 40)
         print("Transactions Menu:")
         print("1. Add transaction")
-        print("2. Delete transaction")
-        print("3. View Transactions")
-        print("4. Back")
+        print("2. Update transaction")
+        print("3. Delete transaction")
+        print("4. View Transactions")
+        print("5. Back")
         print("-" * 40)
 
         choice = input("Enter your choice: ")
         if choice == "1":
             add_transaction()
         elif choice == "2":
-            pass
+            update_transaction()
         elif choice == "3":
-            view_transactions()    
+            pass
         elif choice == "4":
+            view_transactions()    
+        elif choice == "5":
             break
         else:
             print("Invalid choice. Please try again.")
