@@ -166,8 +166,24 @@ def update_transaction():
 
 def delete_transaction():
     """
-
+   
     """
+    while True:
+        date = input("Enter the date of the transaction to delete (YYYY-MM-DD): ")
+        try:
+            datetime.strptime(date, "%Y-%m-%d")
+            break
+        except ValueError:
+            print("Invalid date format. Please enter the date in YYYY-MM-DD format.")
+
+    transactions = get_transactions()
+    worksheet = SHEET.worksheet("transactions")
+    for i, transaction in enumerate(transactions):
+        if transaction["Date"] == date:
+            worksheet.delete_rows(i + 2)
+            print("Transaction deleted successfully!")
+            return
+    print("Transaction not found.")
 
 
 def view_transactions():
@@ -207,7 +223,7 @@ def transactions_menu():
         elif choice == "2":
             update_transaction()
         elif choice == "3":
-            pass
+            delete_transaction()
         elif choice == "4":
             view_transactions()    
         elif choice == "5":
