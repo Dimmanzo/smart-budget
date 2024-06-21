@@ -177,11 +177,7 @@ def view_transactions():
     transactions = SHEET.worksheet("transactions").get_all_records()
     for transaction in transactions:
         print("-" * 40)
-        print(f"Date: {transaction['Date']}")
-        print(f"Type: {transaction['Type']}")
-        print(f"Category: {transaction['Category']}")
-        print(f"Amount: {transaction['Amount']}")
-        print(f"Description: {transaction['Description']}")
+        print(f"Date: {transaction['Date']} | Type: {transaction['Type']} | Category: {transaction['Category']} | Amount: {transaction['Amount']} | Description: {transaction['Description']}")
 
 
 def generate_report():
