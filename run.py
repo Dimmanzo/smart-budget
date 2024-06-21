@@ -16,6 +16,7 @@ SHEET = GSPREAD_CLIENT.open('smart-budget')
 
 INCOME_CATEGORIES = {"W": "Wage", "S": "Savings", "O": "Other"}
 EXPENSE_CATEGORIES = {"H": "Housing", "T": "Transport", "F": "Food", "E": "Entertainment"}
+VALID_CATEGORIES = {"H": "Housing", "T": "Transport", "F": "Food", "E": "Entertainment", "S": "Savings"}
 
 
 def get_transactions():
@@ -34,13 +35,25 @@ def set_budget():
     Adds budget data to the 'budget' worksheet.
     Displays an error if the user enters anything other than a number or invalid category.
     """
+    worksheet = SHEET.worksheet("budget")
+    budget_data = worksheet.get_all_records()
+    existing_categories = {item["Category"] for item in budget_data}
+
     while True:
         print("-" * 40)
-        category = input("Enter the category (Housing, Transport, Food, Entertainment, Savings):\n")
-        if category in VALID_CATEGORIES:
+        category_key = input("Enter the category: (H) Housing, (T) Transport, (F) Food, (E) Entertainment, (S) Savings\n").upper()
+        if category_key in VALID_CATEGORIES:
+            category = VALID_CATEGORIES[category_key]
             break
         else:
-            print("Invalid category. Please choose from Housing, Transport, Food, Entertainment, Savings.")
+            print("Invalid category. Please choose from H (Housing), T (Transport), F (Food), E (Entertainment), S (Savings).")
+    
+    if category in existing_categories:
+        overwrite = input(f"A budget is already set for {category}. Do you want to overwrite it? (Y/N): ").upper()
+        if overwrite != 'Y':
+            print("Budget not changed.")
+            return
+
     while True:
         print("-" * 40)
         try:
@@ -49,9 +62,15 @@ def set_budget():
         except ValueError:
             print("Invalid input. Please enter a number.")
 
-    worksheet = SHEET.worksheet("budget")
-    worksheet.append_row([category, limit])
-    print(f"Budget limit for {category} set to {limit}")
+    if category in existing_categories:
+        for i, item in enumerate(budget_data):
+            if item["Category"] == category:
+                worksheet.update_cell(i + 2, 2, limit)
+                break
+        print(f"Budget limit for {category} updated to {limit}")
+    else:
+        worksheet.append_row([category, limit])
+        print(f"Budget limit for {category} set to {limit}")
 
 
 def add_transaction():
