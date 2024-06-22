@@ -34,6 +34,7 @@ def set_budget():
     Asks the user to enter a category and a budget limit.
     Adds budget data to the 'budget' worksheet.
     Displays an error if the user enters anything other than a number or invalid category.
+    Checks if a budget is already set for the chosen category.
     """
     worksheet = SHEET.worksheet("budget")
     budget_data = worksheet.get_all_records()
@@ -219,6 +220,23 @@ def generate_report():
     """
 
     """
+    transactions = get_transactions()
+    budget_data = SHEET.worksheet("budget").get_all_records()
+
+    income = sum(float(t['Amount']) for t in transactions if t['Type'] == 'income')
+    expenses = sum(float(t['Amount']) for t in transactions if t['Type'] == 'expense')
+    savings = income - expenses
+
+    print("-" * 40)
+    print(f"Total Income: {income}, Total Expenses: {expenses}, Savings: {savings}")
+    
+    print("-" * 40)
+    print("Budget Summary:")
+    print("-" * 40)
+    for category in budget_data:
+        category_expenses = sum(float(t['Amount']) for t in transactions if t['Category'] == category['Category'] and t['Type'] == 'expense')
+        remaining_budget = float(category['Limit']) - category_expenses
+        print(f"{category['Category']}, Spent: {category_expenses}, Budget Limit: {category['Limit']}, Remaining: {remaining_budget}")
 
 
 def transactions_menu():
@@ -269,7 +287,7 @@ def main():
         elif choice == "2":
             transactions_menu()
         elif choice == "3":
-            pass    
+            generate_report()    
         elif choice == "4":
             print("-" * 40)
             print("Goodbye!")
