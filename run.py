@@ -187,7 +187,10 @@ def update_transaction():
 
 def delete_transaction():
     """
-   
+    Prompts the user to enter the date of the transaction to delete.
+    Finds and lists all transactions from the 'transactions' worksheet for that date.
+    Allows the user to choose which transaction to delete.
+    Handles invalid date format and includes a confirmation message before deletion.
     """
     while True:
         date = input("Enter the date of the transaction to delete (YYYY-MM-DD): ")
@@ -199,19 +202,45 @@ def delete_transaction():
 
     transactions = get_transactions()
     worksheet = SHEET.worksheet("transactions")
-    for i, transaction in enumerate(transactions):
-        if transaction["Date"] == date:
-            print(f"Found transaction! Date: {Fore.GREEN}{transaction['Date']}{Fore.RESET}, Type: {Fore.GREEN}{transaction['Type']}{Fore.RESET}, "
-                  f"Category: {Fore.GREEN}{transaction['Category']}{Fore.RESET}, Amount: {Fore.GREEN}{transaction['Amount']}{Fore.RESET}, "
-                  f"Description: {Fore.GREEN}{transaction['Description']}{Fore.RESET}")
-            confirm = input("Are you sure you want to delete this transaction? (Y/N)" ).upper()
-            if confirm == 'Y':      
-                worksheet.delete_rows(i + 2)          
-                print("Transaction deleted successfully!")
+
+    # Filter transactions by date
+    transactions_on_date = [t for t in transactions if t["Date"] == date]
+
+    if not transactions_on_date:
+        print("No transactions found on this date.")
+        return
+
+    print("Transactions on this date:")
+    print("-" * 40)
+    for idx, transaction in enumerate(transactions_on_date, start=1):
+        print(f"{idx}. Date: {Fore.GREEN}{transaction['Date']}{Fore.RESET} | Type: {Fore.GREEN}{transaction['Type']}{Fore.RESET} | "
+              f"Category: {Fore.GREEN}{transaction['Category']}{Fore.RESET} | Amount: {Fore.GREEN}{transaction['Amount']}{Fore.RESET} | "
+              f"Description: {Fore.GREEN}{transaction['Description']}{Fore.RESET}")
+
+    while True:
+        try:
+            transaction_number = int(input("Enter the number of the transaction you want to delete: "))
+            if 1 <= transaction_number <= len(transactions_on_date):
+                selected_transaction = transactions_on_date[transaction_number - 1]
+                break
             else:
-                print("Transaction deletion canceled.")
-            return
-    print("Transaction not found.")
+                print(f"Invalid number. Please enter a number between 1 and {len(transactions_on_date)}.")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+
+    print(f"Selected transaction: Date: {Fore.GREEN}{selected_transaction['Date']}{Fore.RESET} | Type: {Fore.GREEN}{selected_transaction['Type']}{Fore.RESET} | "
+          f"Category: {Fore.GREEN}{selected_transaction['Category']}{Fore.RESET} | Amount: {Fore.GREEN}{selected_transaction['Amount']}{Fore.RESET} | "
+          f"Description: {Fore.GREEN}{selected_transaction['Description']}{Fore.RESET}")
+    confirm = input(f"Are you sure you want to delete this transaction? ({Fore.GREEN}Y{Fore.RESET}/{Fore.RED}N{Fore.RESET}): ").upper()
+    if confirm == 'Y':
+        # Find the index of the transaction in the original list
+        for i, transaction in enumerate(transactions):
+            if transaction == selected_transaction:
+                worksheet.delete_rows(i + 2)
+                print("Transaction deleted successfully!")
+                return
+    else:
+        print("Transaction deletion canceled.")
 
 
 def view_transactions():
