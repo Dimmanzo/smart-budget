@@ -1,6 +1,7 @@
 import gspread
 from google.oauth2.service_account import Credentials
 from datetime import datetime 
+from colorama import Fore
 
 # Google Sheets
 SCOPE = [
@@ -213,7 +214,12 @@ def view_transactions():
     transactions = SHEET.worksheet("transactions").get_all_records()
     for transaction in transactions:
         print("-" * 40)
-        print(f"Date: {transaction['Date']} | Type: {transaction['Type']} | Category: {transaction['Category']} | Amount: {transaction['Amount']} | Description: {transaction['Description']}")
+        print(f"Date: {Fore.GREEN}{transaction['Date']}{Fore.RESET} | "
+            f"Type: {Fore.GREEN}{transaction['Type']}{Fore.RESET} | "
+            f"Category: {Fore.GREEN}{transaction['Category']}{Fore.RESET} | "
+            f"Amount: {Fore.GREEN}{transaction['Amount']}{Fore.RESET} | "
+            f"Description: {Fore.GREEN}{transaction['Description']}{Fore.RESET}"
+        )
 
 
 def generate_report():
@@ -228,7 +234,7 @@ def generate_report():
     savings = income - expenses
 
     print("-" * 40)
-    print(f"Total Income: {income}, Total Expenses: {expenses}, Savings: {savings}")
+    print(f"Total Income: {Fore.GREEN}{income}{Fore.RESET} | Total Expenses: {Fore.RED}{expenses}{Fore.RESET} | Savings: {Fore.CYAN}{savings}{Fore.RESET}")
     
     print("-" * 40)
     print("Budget Summary:")
@@ -236,7 +242,7 @@ def generate_report():
     for category in budget_data:
         category_expenses = sum(float(t['Amount']) for t in transactions if t['Category'] == category['Category'] and t['Type'] == 'expense')
         remaining_budget = float(category['Limit']) - category_expenses
-        print(f"{category['Category']}, Spent: {category_expenses}, Budget Limit: {category['Limit']}, Remaining: {remaining_budget}")
+        print(f"{category['Category']} | Spent: {Fore.RED}{category_expenses}{Fore.RESET} | Budget Limit: {Fore.GREEN}{category['Limit']}{Fore.RESET} | Remaining: {Fore.CYAN}{remaining_budget}{Fore.RESET}")
 
 
 def transactions_menu():
