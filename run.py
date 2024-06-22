@@ -201,8 +201,15 @@ def delete_transaction():
     worksheet = SHEET.worksheet("transactions")
     for i, transaction in enumerate(transactions):
         if transaction["Date"] == date:
-            worksheet.delete_rows(i + 2)
-            print("Transaction deleted successfully!")
+            print(f"Found transaction! Date: {Fore.GREEN}{transaction['Date']}{Fore.RESET}, Type: {Fore.GREEN}{transaction['Type']}{Fore.RESET}, "
+                  f"Category: {Fore.GREEN}{transaction['Category']}{Fore.RESET}, Amount: {Fore.GREEN}{transaction['Amount']}{Fore.RESET}, "
+                  f"Description: {Fore.GREEN}{transaction['Description']}{Fore.RESET}")
+            confirm = input("Are you sure you want to delete this transaction? (Y/N)" ).upper()
+            if confirm == 'Y':      
+                worksheet.delete_rows(i + 2)          
+                print("Transaction deleted successfully!")
+            else:
+                print("Transaction deletion canceled.")
             return
     print("Transaction not found.")
 
