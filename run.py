@@ -43,15 +43,15 @@ def set_budget():
 
     while True:
         print("-" * 40)
-        category_key = input("Enter the category: (H) Housing, (T) Transport, (F) Food, (E) Entertainment, (S) Savings\n").upper()
+        category_key = input(f"Enter the category: ({Fore.GREEN}H{Fore.RESET}) Housing, ({Fore.GREEN}T{Fore.RESET}) Transport, ({Fore.GREEN}F{Fore.RESET}) Food, ({Fore.GREEN}E{Fore.RESET}) Entertainment, ({Fore.GREEN}S{Fore.RESET}) Savings\n").upper()
         if category_key in VALID_CATEGORIES:
             category = VALID_CATEGORIES[category_key]
             break
         else:
-            print("Invalid category. Please choose from H (Housing), T (Transport), F (Food), E (Entertainment), S (Savings).")
+            print(f"Invalid category. Please choose from {Fore.GREEN}H{Fore.RESET} (Housing), {Fore.GREEN}T{Fore.RESET} (Transport), {Fore.GREEN}F{Fore.RESET} (Food), {Fore.GREEN}E{Fore.RESET} (Entertainment), {Fore.GREEN}S{Fore.RESET} (Savings).")
     
     if category in existing_categories:
-        overwrite = input(f"A budget is already set for {category}. Do you want to overwrite it? (Y/N): ").upper()
+        overwrite = input(f"A budget is already set for {category}. Do you want to overwrite it? ({Fore.GREEN}Y{Fore.RESET}/{Fore.RED}N{Fore.RESET}): ").upper()
         if overwrite != 'Y':
             print("Budget not changed.")
             return
@@ -59,7 +59,7 @@ def set_budget():
     while True:
         print("-" * 40)
         try:
-            limit = float(input(f"Enter the budget limit for {category}:\n"))
+            limit = float(input(f"Enter the budget limit for {Fore.GREEN}{category}{Fore.RESET}:\n"))
             break
         except ValueError:
             print("Invalid input. Please enter a number.")
@@ -69,10 +69,10 @@ def set_budget():
             if item["Category"] == category:
                 worksheet.update_cell(i + 2, 2, limit)
                 break
-        print(f"Budget limit for {category} updated to {limit}")
+        print(f"Budget limit for {Fore.GREEN}{category}{Fore.RESET} updated to {Fore.GREEN}{limit}{Fore.RESET}")
     else:
         worksheet.append_row([category, limit])
-        print(f"Budget limit for {category} set to {limit}")
+        print(f"Budget limit for {Fore.GREEN}{category}{Fore.RESET} set to {Fore.GREEN}{limit}{Fore.RESET}")
 
 
 def add_transaction():
