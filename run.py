@@ -42,7 +42,7 @@ def set_budget():
     existing_categories = {item["Category"] for item in budget_data}
 
     while True:
-        print("-" * 40)
+        print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
         category_key = input(f"Enter the category: ({Fore.GREEN}H{Fore.RESET}) Housing, ({Fore.GREEN}T{Fore.RESET}) Transport, ({Fore.GREEN}F{Fore.RESET}) Food, ({Fore.GREEN}E{Fore.RESET}) Entertainment, ({Fore.GREEN}S{Fore.RESET}) Savings\n").upper()
         if category_key in VALID_CATEGORIES:
             category = VALID_CATEGORIES[category_key]
@@ -57,7 +57,7 @@ def set_budget():
             return
 
     while True:
-        print("-" * 40)
+        print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
         try:
             limit = float(input(f"Enter the budget limit for {Fore.GREEN}{category}{Fore.RESET}:\n"))
             if limit <= 0:
@@ -241,7 +241,7 @@ def delete_transaction():
         return
 
     print("Transactions on this date:")
-    print("-" * 40)
+    print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
     for idx, transaction in enumerate(transactions_on_date, start=1):
         print(f"{idx}. Date: {Fore.GREEN}{transaction['Date']}{Fore.RESET} | Type: {Fore.GREEN}{transaction['Type']}{Fore.RESET} | "
               f"Category: {Fore.GREEN}{transaction['Category']}{Fore.RESET} | Amount: {Fore.GREEN}{transaction['Amount']}{Fore.RESET} | "
@@ -279,7 +279,7 @@ def view_transactions():
     """
     transactions = SHEET.worksheet("transactions").get_all_records()
     for transaction in transactions:
-        print("-" * 40)
+        print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
         print(f"Date: {Fore.GREEN}{transaction['Date']}{Fore.RESET} | "
             f"Type: {Fore.GREEN}{transaction['Type']}{Fore.RESET} | "
             f"Category: {Fore.GREEN}{transaction['Category']}{Fore.RESET} | "
@@ -301,12 +301,12 @@ def generate_report():
     expenses = sum(float(t['Amount']) for t in transactions if t['Type'] == 'expense')
     savings = income - expenses
 
-    print("-" * 40)
+    print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
     print(f"Total Income: {Fore.GREEN}{income}{Fore.RESET} | Total Expenses: {Fore.RED}{expenses}{Fore.RESET} | Savings: {Fore.CYAN}{savings}{Fore.RESET}")
     
-    print("-" * 40)
+    print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
     print("Budget Summary:")
-    print("-" * 40)
+    print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
     for category in budget_data:
         category_expenses = sum(float(t['Amount']) for t in transactions if t['Category'] == category['Category'] and t['Type'] == 'expense')
         remaining_budget = float(category['Limit']) - category_expenses
@@ -319,14 +319,14 @@ def transactions_menu():
     Provides options to add, delete, view transactions, or go back to the main menu.
     """
     while True:
-        print("-" * 40)
+        print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
         print("Transactions Menu:")
-        print("1. Add transaction")
-        print("2. Update transaction")
-        print("3. Delete transaction")
-        print("4. View Transactions")
-        print("5. Back")
-        print("-" * 40)
+        print(f"{Fore.GREEN}1{Fore.RESET}. Add transaction")
+        print(f"{Fore.GREEN}2{Fore.RESET}. Update transaction")
+        print(f"{Fore.GREEN}3{Fore.RESET}. Delete transaction")
+        print(f"{Fore.GREEN}4{Fore.RESET}. View Transactions")
+        print(f"{Fore.GREEN}5{Fore.RESET}. Back")
+        print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
 
         choice = input("Enter your choice: ")
         if choice == "1":
@@ -340,7 +340,7 @@ def transactions_menu():
         elif choice == "5":
             break
         else:
-            print("Invalid choice. Please try again.")
+            print(f"{Fore.GREEN}Invalid choice{Fore.RESET}. Please try again.")
 
 def main():
     """
@@ -348,12 +348,12 @@ def main():
     Provides options to set budget, add transaction, update transaction, delete transaction, view transactions, and generate report.
     """
     while True:
-        print("-" * 40)
-        print("1. Set budget")
-        print("2. View/Edit transactions")
-        print("3. Generate report")
-        print("4. Exit")
-        print("-" * 40)
+        print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
+        print(f"{Fore.GREEN}1{Fore.RESET}. Set budget")
+        print(f"{Fore.GREEN}2{Fore.RESET}. View/Edit transactions")
+        print(f"{Fore.GREEN}3{Fore.RESET}. Generate report")
+        print(f"{Fore.GREEN}4{Fore.RESET}. Exit")
+        print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
 
         choice = input("Enter your choice: ")
         if choice == "1":
@@ -363,12 +363,12 @@ def main():
         elif choice == "3":
             generate_report()    
         elif choice == "4":
-            print("-" * 40)
+            print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
             print("Goodbye!")
             break
         else:
-            print("Invalid choice. Please try again.")
+            print(f"{Fore.RED}Invalid choice{Fore.RESET}. Please try again.")
 
 
-print("Welcome to Smart Budget!")
+print(f"Welcome to {Fore.GREEN}Smart Budget{Fore.RESET}!")
 main()
