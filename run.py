@@ -125,9 +125,14 @@ def add_transaction():
                 raise ValueError("Amount must be a positive number.")
             break
         except ValueError as e:
-            print(f"Invalid input: {e} Please enter a positive number.")
+            print(f"Invalid input: {e}. Please enter a positive number.")
 
     description = input("Enter the description: ")
+    if description.strip():
+        break
+    else:
+        print("Description cannot be empty. Please enter a valid description.")
+        
     worksheet = SHEET.worksheet("transactions")
     worksheet.append_row([date, transaction_type, category, amount, description])
     print("Transaction added successfully!")
