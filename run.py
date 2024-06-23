@@ -260,7 +260,9 @@ def view_transactions():
 
 def generate_report():
     """
-
+    Generates and displays a financial report based on the transactions and budget data.
+    Calculates total income, expenses, savings, and compares spending against budget limits.
+    Uses colorama for colored output to enhance user experience.
     """
     transactions = get_transactions()
     budget_data = SHEET.worksheet("budget").get_all_records()
