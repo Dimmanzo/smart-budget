@@ -60,9 +60,11 @@ def set_budget():
         print("-" * 40)
         try:
             limit = float(input(f"Enter the budget limit for {Fore.GREEN}{category}{Fore.RESET}:\n"))
+            if limit <= 0:
+                raise ValueError("Budget limit must be a positive number.")
             break
-        except ValueError:
-            print("Invalid input. Please enter a number.")
+        except ValueError as e:
+            print(f"Invalid input: {e} Please enter a positive number.")
 
     if category in existing_categories:
         for i, item in enumerate(budget_data):
@@ -119,9 +121,11 @@ def add_transaction():
     while True:
         try:
             amount = float(input("Enter the amount: "))
+            if amount <= 0:
+                raise ValueError("Amount must be a positive number.")
             break
-        except ValueError:
-            print("Invalid input. Please enter a number.")
+        except ValueError as e:
+            print(f"Invalid input: {e} Please enter a positive number.")
 
     description = input("Enter the description: ")
     worksheet = SHEET.worksheet("transactions")
@@ -174,9 +178,11 @@ def update_transaction():
             while True:
                 try:
                     amount = float(input("Enter the new amount: "))
+                    if amount <= 0:
+                        raise ValueError("Amount must be a positive number.")
                     break
-                except ValueError:
-                    print("Invalid input. Please enter a number for the amount.")
+                except ValueError as e:
+                    print(f"Invalid input: {e} Please enter a number for the amount.")
 
             description = input("Enter the new description: ")
             worksheet.update(range_name=f'A{i+2}:E{i+2}', values=[[date, transaction_type, category, amount, description]])
