@@ -51,9 +51,9 @@ def set_budget():
             print(f"{Fore.RED}Invalid category{Fore.RESET}. Please choose from {Fore.GREEN}H{Fore.RESET} (Housing), {Fore.GREEN}T{Fore.RESET} (Transport), {Fore.GREEN}F{Fore.RESET} (Food), {Fore.GREEN}E{Fore.RESET} (Entertainment), {Fore.GREEN}S{Fore.RESET} (Savings).")
     
     if category in existing_categories:
-        overwrite = input(f"A budget is already set for {category}. Do you want to overwrite it? ({Fore.GREEN}Y{Fore.RESET}/{Fore.RED}N{Fore.RESET}):\n").upper()
+        overwrite = input(f"A budget is already set for {Fore.GREEN}{category}{Fore.RESET}. Do you want to overwrite it? ({Fore.GREEN}Y{Fore.RESET}/{Fore.RED}N{Fore.RESET}):\n").upper()
         if overwrite != 'Y':
-            print("Budget not changed.")
+            print(f"{Fore.GREEN}Budget not changed{Fore.RESET}.")
             return
 
     while True:
@@ -61,7 +61,7 @@ def set_budget():
         try:
             limit = float(input(f"Enter the budget limit for {Fore.GREEN}{category}{Fore.RESET}:\n"))
             if limit <= 0:
-                raise ValueError("Budget limit must be a positive number.")
+                raise ValueError(f"Budget limit must be a {Fore.GREEN}positive number{Fore.RESET}.")
             break
         except ValueError as e:
             print(f"{Fore.RED}Invalid input!{Fore.RESET} Please enter a {Fore.GREEN}positive number.{Fore.RESET}")
@@ -85,7 +85,7 @@ def add_transaction():
     Includes error handling, handles single key inputs for transaction type and category selection.
     """
     while True:
-        date = input("Enter the date (YYYY-MM-DD) or press 'Enter' for today's date:\n")
+        date = input(f"Enter the date ({Fore.GREEN}YYYY-MM-DD{Fore.RESET}) or press '{Fore.GREEN}Enter{Fore.RESET}' for today's date:\n")
         if not date:
             date = datetime.today().strftime("%Y-%m-%d")
             print(f"Date set to today's date: {Fore.GREEN}{date}{Fore.RESET}")
@@ -95,19 +95,19 @@ def add_transaction():
             print(f"Date entered: {Fore.GREEN}{date}{Fore.RESET}")
             break
         except ValueError:
-            print("Invalid date format. Please enter the date in YYYY-MM-DD format.")
+            print(f"{Fore.RED}Invalid date format{Fore.RESET}. Please enter the date in {Fore.GREEN}YYYY-MM-DD{Fore.RESET} format.")
     
     while True:
-        transaction_type = input(f"Enter the type: Income ({Fore.GREEN}I{Fore.RESET}), Expense ({Fore.GREEN}E{Fore.RESET}):\n").upper()
+        transaction_type = input(f"Enter the type: ({Fore.GREEN}I{Fore.RESET}) Income, ({Fore.GREEN}E{Fore.RESET}) Expense:\n").upper()
         if transaction_type in ["I", "E"]:
             if transaction_type == "I":
                 transaction_type = "income"
                 categories = INCOME_CATEGORIES
-                print(f"Choose a category: Wage ({Fore.GREEN}W{Fore.RESET}), Savings ({Fore.GREEN}S{Fore.RESET}), Other ({Fore.GREEN}O{Fore.RESET}):")
+                print(f"Choose a category: ({Fore.GREEN}W{Fore.RESET}) Wage, ({Fore.GREEN}S{Fore.RESET}) Savings, ({Fore.GREEN}O{Fore.RESET}) Other:")
             else:
                 transaction_type = "expense"
                 categories = EXPENSE_CATEGORIES
-                print(f"Choose a category: Housing ({Fore.GREEN}H{Fore.RESET}), Transport ({Fore.GREEN}T{Fore.RESET}), Food ({Fore.GREEN}F{Fore.RESET}), Entertainment ({Fore.GREEN}E{Fore.RESET})")
+                print(f"Choose a category: ({Fore.GREEN}H{Fore.RESET}) Housing, ({Fore.GREEN}T{Fore.RESET}) Transport, ({Fore.GREEN}F{Fore.RESET}) Food, ({Fore.GREEN}E{Fore.RESET}) Entertainment")
             print(f"Transaction type set to: {Fore.GREEN}{transaction_type}{Fore.RESET}")
             break
         else:
@@ -126,11 +126,11 @@ def add_transaction():
         try:
             amount = float(input("Enter the amount:\n"))
             if amount <= 0:
-                raise ValueError("Amount must be a positive number.")
+                raise ValueError(f"Amount must be a {Fore.GREEN}positive number{Fore.RESET}.")
             print(f"Amout set to: {Fore.GREEN}{amount}{Fore.RESET}")
             break
         except ValueError as e:
-            print(f"{Fore.RED}Invalid input!{Fore.RESET} Please enter a positive number.")
+            print(f"{Fore.RED}Invalid input!{Fore.RESET} Please enter a {Fore.GREEN}positive number{Fore.RESET}.")
 
     while True:
         description = input("Enter the description:\n")
@@ -152,13 +152,13 @@ def update_transaction():
     Handles invalid date format, transaction type, category and non-numeric amount.
     """
     while True:
-        date = input("Enter the date of the transaction to update (YYYY-MM-DD):\n")
+        date = input(f"Enter the date of the transaction to update ({Fore.GREEN}YYYY-MM-DD{Fore.RESET}):\n")
         try:
             datetime.strptime(date, "%Y-%m-%d")
             print(f"Date entered: {Fore.GREEN}{date}{Fore.RESET}")
             break
         except ValueError:
-            print(f"{Fore.RED}Invalid date format{Fore.RESET}. Please enter the date in YYYY-MM-DD format.")
+            print(f"{Fore.RED}Invalid date format{Fore.RESET}. Please enter the date in {Fore.GREEN}YYYY-MM-DD{Fore.RESET} format.")
 
     transcations = get_transactions()
     worksheet = SHEET.worksheet("transactions")
@@ -171,11 +171,11 @@ def update_transaction():
                     if transaction_type == "I":
                         transaction_type = "income"
                         categories = INCOME_CATEGORIES
-                        print(f"Choose a new category: Wage ({Fore.GREEN}W{Fore.RESET}), Savings ({Fore.GREEN}S{Fore.RESET}), Other ({Fore.GREEN}O{Fore.RESET})")
+                        print(f"Choose a new category: ({Fore.GREEN}W{Fore.RESET}) Wage, ({Fore.GREEN}S{Fore.RESET}) Savings, ({Fore.GREEN}O{Fore.RESET}) Other")
                     else:
                         transaction_type = "expense"
                         categories = EXPENSE_CATEGORIES
-                        print(f"Choose a new category: Housing ({Fore.GREEN}H{Fore.RESET}), Transport ({Fore.GREEN}T{Fore.RESET}), Food ({Fore.GREEN}F{Fore.RESET}), Entertainment ({Fore.GREEN}E{Fore.RESET})")
+                        print(f"Choose a new category: ({Fore.GREEN}H{Fore.RESET}) Housing, ({Fore.GREEN}T{Fore.RESET}) Transport, ({Fore.GREEN}F{Fore.RESET}) Food, ({Fore.GREEN}E{Fore.RESET}) Entertainment")
                     print(f"Transaction type set to: {Fore.GREEN}{transaction_type}{Fore.RESET}")
                     break
                 else:
@@ -188,13 +188,13 @@ def update_transaction():
                 print(f"Category set to: {Fore.GREEN}{category}{Fore.RESET}")
                 break
             else:
-                print(f"{Fore.RED}Invalid category{Fore.RESET}. Please choose from {', '.join(categories.keys())}.") 
+                print(f"{Fore.RED}Invalid category{Fore.RESET}. Please choose from {Fore.GREEN}{', '.join(categories.keys())}{Fore.RESET}.") 
 
             while True:
                 try:
                     amount = float(input("Enter the new amount:\n"))
                     if amount <= 0:
-                        raise ValueError("Amount must be a positive number.")
+                        raise ValueError(f"Amount must be a {Fore.GREEN}positive number{Fore.RESET}.")
                     print(f"Amount set to: {Fore.GREEN}{amount}{Fore.RESET}")
                     break
                 except ValueError as e:
@@ -222,13 +222,13 @@ def delete_transaction():
     Handles invalid date format and includes a confirmation message before deletion.
     """
     while True:
-        date = input("Enter the date of the transaction to delete (YYYY-MM-DD):\n")
+        date = input(f"Enter the date of the transaction to delete ({Fore.GREEN}YYYY-MM-DD{Fore.RESET}):\n")
         try:
             datetime.strptime(date, "%Y-%m-%d")
             print(f"Date entered: {Fore.GREEN}{date}{Fore.RESET}")
             break
         except ValueError:
-            print(f"{Fore.RED}Invalid date format{Fore.RESET}. Please enter the date in YYYY-MM-DD format.")
+            print(f"{Fore.RED}Invalid date format{Fore.RESET}. Please enter the date in {Fore.GREEN}YYYY-MM-DD{Fore.RED} format.")
 
     transactions = get_transactions()
     worksheet = SHEET.worksheet("transactions")
