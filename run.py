@@ -275,17 +275,59 @@ def delete_transaction():
 
 def view_transactions():
     """
-    Fetches and displays all transaction records from the 'transactions' worksheet.
+    Fetches and displays all transaction records from the 'transactions' worksheet
+    for a specific month or year based on user input.
     """
-    transactions = SHEET.worksheet("transactions").get_all_records()
+    while True:
+        print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
+        print(f"{Fore.GREEN}1{Fore.RESET}. View transactions ({Fore.GREEN}Month{Fore.RESET})")
+        print(f"{Fore.GREEN}2{Fore.RESET}. View transactions ({Fore.GREEN}Year{Fore.RESET})")
+        print(f"{Fore.GREEN}3{Fore.RESET}. Back")
+        print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
+
+        choice = input("Enter your choice:\n")
+        if choice == "1":
+            date_format = "%Y-%m"
+            promt = f"Enter the month and year ({Fore.GREEN}YYYY-MM{Fore.RESET}):\n"
+            break
+        elif choice == "2":
+            date_format = "%Y"
+            promt = f"Enter the year ({Fore.GREEN}YYYY{Fore.RESET}):\n"
+            break
+        elif choice == "3":
+            return
+        else:
+            print(f"{Fore.RED}Invalid choice{Fore.RESET}. Please try again.")
+
+    while True:
+        date_input = input(promt)
+        try:
+            selected_date = datetime.strptime(date_input, date_format)
+            break
+        except ValueError:
+            print(f"{Fore.RED}Invalid date format{Fore.RESET}. Please enter the date in {Fore.GREEN}{date_format}{Fore.RESET} format.")
+
+    transactions = get_transactions()
+    filtered_transactions = []
+
     for transaction in transactions:
+        transaction_date = datetime.strptime(transaction['Date'], "%Y-%m-%d")
+        if date_format == "%Y-%m" and transaction_date.strftime("%Y-%m") == selected_date.strftime("%Y-%m"):
+            filtered_transactions.append(transaction)
+        if date_format == "%Y" and transaction_date.strftime("%Y") == selected_date.strftime("%Y"):
+            filtered_transactions.append(transaction)
+
+    if not filtered_transactions:
+        print(f"{Fore.RED}No transactions found for the selected period.{Fore.RESET}")
+        return
+
+    for transaction in filtered_transactions:
         print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
         print(f"Date: {Fore.GREEN}{transaction['Date']}{Fore.RESET} | "
             f"Type: {Fore.GREEN}{transaction['Type']}{Fore.RESET} | "
             f"Category: {Fore.GREEN}{transaction['Category']}{Fore.RESET} | "
             f"Amount: {Fore.GREEN}{transaction['Amount']}{Fore.RESET} | "
-            f"Description: {Fore.GREEN}{transaction['Description']}{Fore.RESET}"
-        )
+            f"Description: {Fore.GREEN}{transaction['Description']}{Fore.RESET}")
 
 
 def generate_report():
