@@ -3,18 +3,20 @@ from google.oauth2.service_account import Credentials
 from datetime import datetime 
 from colorama import Fore
 
-# Google Sheets
+# Google Sheets configuration
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive.file",
     "https://www.googleapis.com/auth/drive"
 ]
 
+# Credentials and client setup
 CREDS = Credentials.from_service_account_file('creds.json')
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('smart-budget')
 
+# Categories for transactions
 INCOME_CATEGORIES = {"W": "Wage", "S": "Savings", "O": "Other"}
 EXPENSE_CATEGORIES = {"H": "Housing", "T": "Transport", "F": "Food", "E": "Entertainment"}
 VALID_CATEGORIES = {"H": "Housing", "T": "Transport", "F": "Food", "E": "Entertainment", "S": "Savings"}
@@ -41,6 +43,7 @@ def set_budget():
     budget_data = worksheet.get_all_records()
     existing_categories = {item["Category"] for item in budget_data}
 
+    # Prompt for category
     while True:
         print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
         category_key = input(f"Enter the category: ({Fore.GREEN}H{Fore.RESET}) Housing, ({Fore.GREEN}T{Fore.RESET}) Transport, ({Fore.GREEN}F{Fore.RESET}) Food, ({Fore.GREEN}E{Fore.RESET}) Entertainment, ({Fore.GREEN}S{Fore.RESET}) Savings\n").upper()
@@ -50,12 +53,14 @@ def set_budget():
         else:
             print(f"{Fore.RED}Invalid category{Fore.RESET}. Please choose from {Fore.GREEN}H{Fore.RESET} (Housing), {Fore.GREEN}T{Fore.RESET} (Transport), {Fore.GREEN}F{Fore.RESET} (Food), {Fore.GREEN}E{Fore.RESET} (Entertainment), {Fore.GREEN}S{Fore.RESET} (Savings).")
     
+    # Check for existing budget
     if category in existing_categories:
         overwrite = input(f"A budget is already set for {Fore.GREEN}{category}{Fore.RESET}. Do you want to overwrite it? ({Fore.GREEN}Y{Fore.RESET}/{Fore.RED}N{Fore.RESET}):\n").upper()
         if overwrite != 'Y':
             print(f"{Fore.GREEN}Budget not changed{Fore.RESET}.")
             return
-
+    
+    # Prompt for budget limit
     while True:
         print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
         try:
@@ -66,6 +71,7 @@ def set_budget():
         except ValueError as e:
             print(f"{Fore.RED}Invalid input!{Fore.RESET} Please enter a {Fore.GREEN}positive number.{Fore.RESET}")
 
+    # Update or add budget
     if category in existing_categories:
         for i, item in enumerate(budget_data):
             if item["Category"] == category:
@@ -84,6 +90,7 @@ def add_transaction():
     Automatically uses today's date if user presses enter.
     Includes error handling, handles single key inputs for transaction type and category selection.
     """
+    # Prompt for date
     while True:
         date = input(f"Enter the date ({Fore.GREEN}YYYY-MM-DD{Fore.RESET}) or press '{Fore.GREEN}Enter{Fore.RESET}' for today's date:\n")
         if not date:
@@ -97,6 +104,7 @@ def add_transaction():
         except ValueError:
             print(f"{Fore.RED}Invalid date format{Fore.RESET}. Please enter the date in {Fore.GREEN}YYYY-MM-DD{Fore.RESET} format.")
     
+    # Prompt for transaction type
     while True:
         transaction_type = input(f"Enter the type: ({Fore.GREEN}I{Fore.RESET}) Income, ({Fore.GREEN}E{Fore.RESET}) Expense:\n").upper()
         if transaction_type in ["I", "E"]:
@@ -112,6 +120,7 @@ def add_transaction():
         else:
             print(f"{Fore.RED}Invalid type{Fore.RESET}. Please enter ({Fore.GREEN}I{Fore.RESET}) for Income or ({Fore.GREEN}E{Fore.RESET}) for Expense.")
     
+    # Prompt for category
     if transaction_type == "income":
         print(f"Choose a category: ({Fore.GREEN}W{Fore.RESET}) Wage, ({Fore.GREEN}S{Fore.RESET}) Savings, ({Fore.GREEN}O{Fore.RESET}) Other:")
     else:
@@ -126,6 +135,7 @@ def add_transaction():
         else:
             print(f"{Fore.RED}Invalid category{Fore.RESET}. Please choose from Wage ({Fore.GREEN}W{Fore.RESET}), Savings ({Fore.GREEN}S{Fore.RESET}), Other ({Fore.GREEN}O{Fore.RESET}).")
     
+    # Prompt for amount
     while True:
         try:
             amount = float(input("Enter the amount:\n"))
@@ -136,6 +146,7 @@ def add_transaction():
         except ValueError as e:
             print(f"{Fore.RED}Invalid input!{Fore.RESET} Please enter a {Fore.GREEN}positive number{Fore.RESET}.")
 
+    # Prompt for description
     while True:
         description = input("Enter the description:\n")
         if description.strip():
@@ -169,6 +180,7 @@ def update_transaction():
     Find and updates transaction in 'transactions' worksheet.
     Handles invalid date format, transaction type, category and non-numeric amount.
     """
+    # Prompt for date
     while True:
         date = input(f"Enter the date of the transaction to update ({Fore.GREEN}YYYY-MM-DD{Fore.RESET}):\n")
         try:
@@ -178,11 +190,13 @@ def update_transaction():
         except ValueError:
             print(f"{Fore.RED}Invalid date format{Fore.RESET}. Please enter the date in {Fore.GREEN}YYYY-MM-DD{Fore.RESET} format.")
 
+    # Fetch transactions
     transcations = get_transactions()
     worksheet = SHEET.worksheet("transactions")
     for i, transaction in enumerate(transcations):
         if transaction["Date"] == date:
             print(f"Found transaction: {Fore.GREEN}{transaction}{Fore.RESET}")
+            # Prompt for new transaction type
             while True:
                 transaction_type = input(f"Enter the new type ({Fore.GREEN}I{Fore.RESET}) Income, ({Fore.GREEN}E{Fore.RESET}) Expense:\n").upper()
                 if transaction_type in ["I", "E"]:
@@ -199,6 +213,7 @@ def update_transaction():
                 else:
                     print(f"{Fore.RED}Invalid type{Fore.RESET}. Please enter ({Fore.GREEN}I{Fore.RESET}) Income or ({Fore.GREEN}E{Fore.RESET}) Expense.")
 
+            # Prompt for new category
             while True:
                category_key = input("Enter the new category:\n").upper()
                if category_key in categories:
@@ -208,6 +223,7 @@ def update_transaction():
             else:
                 print(f"{Fore.RED}Invalid category{Fore.RESET}. Please choose from {Fore.GREEN}{', '.join(categories.keys())}{Fore.RESET}.") 
 
+            # Prompt for new amount
             while True:
                 try:
                     amount = float(input("Enter the new amount:\n"))
@@ -218,6 +234,7 @@ def update_transaction():
                 except ValueError as e:
                     print(f"{Fore.RED}Invalid input!{Fore.RESET} {e} Please enter a number for the amount.")
 
+            # Prompt for new description
             while True:
                 description = input("Enter the new description:\n")
                 if description.strip():
@@ -225,7 +242,8 @@ def update_transaction():
                     break
                 else:
                     print(f"{Fore.RED}Description cannot be empty{Fore.RESET}. Please enter a valid description.")
-
+            
+            # Update transaction
             worksheet.update(range_name=f'A{i+2}:E{i+2}', values=[[date, transaction_type, category, amount, description]])
             print(f"{Fore.GREEN}Transaction updated successfully!{Fore.RESET}")
             return
@@ -239,6 +257,7 @@ def delete_transaction():
     Allows the user to choose which transaction to delete.
     Handles invalid date format and includes a confirmation message before deletion.
     """
+    # Prompt for date
     while True:
         date = input(f"Enter the date of the transaction to delete ({Fore.GREEN}YYYY-MM-DD{Fore.RESET}):\n")
         try:
@@ -248,16 +267,16 @@ def delete_transaction():
         except ValueError:
             print(f"{Fore.RED}Invalid date format{Fore.RESET}. Please enter the date in {Fore.GREEN}YYYY-MM-DD{Fore.RED} format.")
 
+    # Fetch transactions and filter by date
     transactions = get_transactions()
     worksheet = SHEET.worksheet("transactions")
-
-    # Filter transactions by date
     transactions_on_date = [t for t in transactions if t["Date"] == date]
 
     if not transactions_on_date:
         print(f"{Fore.RED}No transactions found on this date.{Fore.RESET}")
         return
-
+    
+    # Display transactions on selected date
     print("Transactions on this date:")
     print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
     for idx, transaction in enumerate(transactions_on_date, start=1):
@@ -265,6 +284,7 @@ def delete_transaction():
               f"Category: {Fore.GREEN}{transaction['Category']}{Fore.RESET} | Amount: {Fore.GREEN}{transaction['Amount']}{Fore.RESET} | "
               f"Description: {Fore.GREEN}{transaction['Description']}{Fore.RESET}")
 
+    # Prompt for transaction number to delete
     while True:
         try:
             transaction_number = int(input("Enter the number of the transaction you want to delete:\n"))
@@ -276,12 +296,13 @@ def delete_transaction():
         except ValueError:
             print(f"{Fore.RED}Invalid input{Fore.RESET}. Please enter a number.")
 
+    # Confirm deletion
     print(f"Selected transaction: Date: {Fore.GREEN}{selected_transaction['Date']}{Fore.RESET} | Type: {Fore.GREEN}{selected_transaction['Type']}{Fore.RESET} | "
           f"Category: {Fore.GREEN}{selected_transaction['Category']}{Fore.RESET} | Amount: {Fore.GREEN}{selected_transaction['Amount']}{Fore.RESET} | "
           f"Description: {Fore.GREEN}{selected_transaction['Description']}{Fore.RESET}")
     confirm = input(f"Are you sure you want to delete this transaction? ({Fore.GREEN}Y{Fore.RESET}/{Fore.RED}N{Fore.RESET}): ").upper()
     if confirm == 'Y':
-        # Find the index of the transaction in the original list
+        # Find the index of the transaction and delete.
         for i, transaction in enumerate(transactions):
             if transaction == selected_transaction:
                 worksheet.delete_rows(i + 2)
@@ -296,13 +317,15 @@ def view_transactions():
     Fetches and displays all transaction records from the 'transactions' worksheet
     for a specific month or year based on user input.
     """
+    # Prompt for view option
     while True:
         print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
         print(f"{Fore.GREEN}1{Fore.RESET}. View transactions ({Fore.GREEN}Month{Fore.RESET})")
         print(f"{Fore.GREEN}2{Fore.RESET}. View transactions ({Fore.GREEN}Year{Fore.RESET})")
         print(f"{Fore.GREEN}3{Fore.RESET}. Back")
         print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
-
+ 
+        # Handle user choice
         choice = input("Enter your choice:\n")
         if choice == "1":
             date_format = "%Y-%m"
@@ -317,6 +340,7 @@ def view_transactions():
         else:
             print(f"{Fore.RED}Invalid choice{Fore.RESET}. Please try again.")
 
+    # Prompt for date input
     while True:
         date_input = input(promt)
         try:
@@ -325,9 +349,9 @@ def view_transactions():
         except ValueError:
             print(f"{Fore.RED}Invalid date format{Fore.RESET}. Please enter the date in {Fore.GREEN}{date_format}{Fore.RESET} format.")
 
+    # Fetch and filter transactions
     transactions = get_transactions()
     filtered_transactions = []
-
     for transaction in transactions:
         transaction_date = datetime.strptime(transaction['Date'], "%Y-%m-%d")
         if date_format == "%Y-%m" and transaction_date.strftime("%Y-%m") == selected_date.strftime("%Y-%m"):
@@ -335,6 +359,7 @@ def view_transactions():
         if date_format == "%Y" and transaction_date.strftime("%Y") == selected_date.strftime("%Y"):
             filtered_transactions.append(transaction)
 
+    # Display filtered transactions
     if not filtered_transactions:
         print(f"{Fore.RED}No transactions found for the selected period.{Fore.RESET}")
         return
@@ -354,16 +379,20 @@ def generate_report():
     Calculates total income, expenses, savings, and compares spending against budget limits.
     Uses colorama for colored output to enhance user experience.
     """
+    # Fetch transactions and budget data
     transactions = get_transactions()
     budget_data = SHEET.worksheet("budget").get_all_records()
 
+    # Calculate totals
     income = sum(float(t['Amount']) for t in transactions if t['Type'] == 'income')
     expenses = sum(float(t['Amount']) for t in transactions if t['Type'] == 'expense')
     savings = income - expenses
-
+    
+    # Display report
     print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
     print(f"Total Income: {Fore.GREEN}{income}{Fore.RESET} | Total Expenses: {Fore.RED}{expenses}{Fore.RESET} | Savings: {Fore.CYAN}{savings}{Fore.RESET}")
     
+     # Display budget summary
     print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
     print("Budget Summary:")
     print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
@@ -378,6 +407,7 @@ def transactions_menu():
     Sub-menu for viewing and editing transactions.
     Provides options to add, delete, view transactions, or go back to the main menu.
     """
+    # Display menu options
     while True:
         print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
         print("Transactions Menu:")
@@ -388,6 +418,7 @@ def transactions_menu():
         print(f"{Fore.GREEN}5{Fore.RESET}. Back")
         print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
 
+        # Handle user choice
         choice = input("Enter your choice:\n")
         if choice == "1":
             add_transaction()
@@ -407,6 +438,7 @@ def main():
     Main function. Handles menu and user choices.
     Provides options to set budget, add transaction, update transaction, delete transaction, view transactions, and generate report.
     """
+    # Display main menu options
     while True:
         print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
         print(f"{Fore.GREEN}1{Fore.RESET}. Set budget")
@@ -415,6 +447,7 @@ def main():
         print(f"{Fore.GREEN}4{Fore.RESET}. Exit")
         print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
 
+        # Handle user choice
         choice = input("Enter your choice:\n")
         if choice == "1":
             set_budget()
@@ -429,6 +462,6 @@ def main():
         else:
             print(f"{Fore.RED}Invalid choice{Fore.RESET}. Please try again.")
 
-
+# Welcome message and start main function
 print(f"Welcome to {Fore.GREEN}Smart Budget{Fore.RESET}!")
 main()
