@@ -375,17 +375,65 @@ def view_transactions():
 
 def generate_report():
     """
-    Generates and displays a financial report based on the transactions and budget data.
+    Generates and displays a financial report based on the transactions and budget data
+    for a specific month or year based on user input.
     Calculates total income, expenses, savings, and compares spending against budget limits.
     Uses colorama for colored output to enhance user experience.
     """
-    # Fetch transactions and budget data
+    while True:
+        # Display menu options for report generation
+        print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
+        print(f"{Fore.GREEN}1{Fore.RESET}. Generate report ({Fore.GREEN}Month{Fore.RESET})")
+        print(f"{Fore.GREEN}2{Fore.RESET}. Generate report ({Fore.GREEN}Year{Fore.RESET})")
+        print(f"{Fore.GREEN}3{Fore.RESET}. Back")
+        print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
+
+        # Get user choice for report type
+        choice = input("Enter your choice:\n")
+        if choice == "1":
+            date_format = "%Y-%m"
+            prompt = f"Enter the month and year ({Fore.GREEN}YYYY-MM{Fore.RESET}):\n"
+            break
+        elif choice == "2":
+            date_format = "%Y"
+            prompt = f"Enter the month and year ({Fore.GREEN}YYYY{Fore.RESET}):\n"
+            break
+        elif choice == "3":
+            return
+        else:
+            print(f"{Fore.RED}Invalid choice{Fore.RESET}. Please try again.")
+
+    # Get the date input from user
+    while True:
+        date_input = input(prompt)
+        try:
+            selected_date = datetime.strptime(date_input, date_format)
+            break
+        except ValueError:
+           print(f"{Fore.RED}Invalid date format{Fore.RESET}. Please enter the date in {Fore.GREEN}{date_format}{Fore.RESET} format.")
+            
+    # Fetch all transactions
     transactions = get_transactions()
+    filtered_transactions = []
+
+    # Filter transactions based on user input (month or year)
+    for transaction in transactions:
+        transaction_date = datetime.strptime(transaction['Date'], "%Y-%m-%d")
+        if date_format == "%Y-%m" and transaction_date.strftime("%Y-%m") == selected_date.strftime("%Y-%m"):
+            filtered_transactions.append(transaction)
+        if date_format == "%Y" and transaction_date.strftime("%Y") == selected_date.strftime("%Y"):
+            filtered_transactions.append(transaction)
+    
+    if not filtered_transactions:
+        print(f"{Fore.RED}No transactions found for the selected period.{Fore.RESET}")
+        return
+
+    # Fetch budget data
     budget_data = SHEET.worksheet("budget").get_all_records()
 
     # Calculate totals
-    income = sum(float(t['Amount']) for t in transactions if t['Type'] == 'income')
-    expenses = sum(float(t['Amount']) for t in transactions if t['Type'] == 'expense')
+    income = sum(float(t['Amount']) for t in filtered_transactions if t['Type'] == 'income')
+    expenses = sum(float(t['Amount']) for t in filtered_transactions if t['Type'] == 'expense')
     savings = income - expenses
     
     # Display report
@@ -397,7 +445,7 @@ def generate_report():
     print("Budget Summary:")
     print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
     for category in budget_data:
-        category_expenses = sum(float(t['Amount']) for t in transactions if t['Category'] == category['Category'] and t['Type'] == 'expense')
+        category_expenses = sum(float(t['Amount']) for t in filtered_transactions if t['Category'] == category['Category'] and t['Type'] == 'expense')
         remaining_budget = float(category['Limit']) - category_expenses
         print(f"{category['Category']} | Spent: {Fore.RED}{category_expenses}{Fore.RESET} | Budget Limit: {Fore.GREEN}{category['Limit']}{Fore.RESET} | Remaining: {Fore.CYAN}{remaining_budget}{Fore.RESET}")
 
