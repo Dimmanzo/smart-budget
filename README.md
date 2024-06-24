@@ -6,6 +6,10 @@ Smart Budget is a user-friendly command-line app designed to help users manage t
 With this app, you can set spending limits for different categories, keep track of your transactions, and generate detailed financial reports. 
 Built with Python, it integrates with Google Sheets to store your data, ensuring it's always safe and easy to access.
 
+__Note:__ Currently, this app is designed for single-user usage. In future updates, an authentication function will be added to allow multiple users to manage their budgets independently.
+
+To make it as simple as possible for users, the app uses one-letter options to avoid typing long commands and prevent misspellings.
+
 ## Features
 
 ### Existing Features
@@ -47,6 +51,9 @@ Built with Python, it integrates with Google Sheets to store your data, ensuring
 
 - __Transaction Categories__
   - Allow users to define custom categories.
+
+- __User Authentication__
+  - Add authentication to enable multiple users to manage their budgets independently.
 
 ## Technologies Used
 
