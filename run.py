@@ -107,12 +107,16 @@ def add_transaction():
             else:
                 transaction_type = "expense"
                 categories = EXPENSE_CATEGORIES
-                print(f"Choose a category: ({Fore.GREEN}H{Fore.RESET}) Housing, ({Fore.GREEN}T{Fore.RESET}) Transport, ({Fore.GREEN}F{Fore.RESET}) Food, ({Fore.GREEN}E{Fore.RESET}) Entertainment")
             print(f"Transaction type set to: {Fore.GREEN}{transaction_type}{Fore.RESET}")
             break
         else:
             print(f"{Fore.RED}Invalid type{Fore.RESET}. Please enter ({Fore.GREEN}I{Fore.RESET}) for Income or ({Fore.GREEN}E{Fore.RESET}) for Expense.")
     
+    if transaction_type == "income":
+        print(f"Choose a category: ({Fore.GREEN}W{Fore.RESET}) Wage, ({Fore.GREEN}S{Fore.RESET}) Savings, ({Fore.GREEN}O{Fore.RESET}) Other:")
+    else:
+        print(f"Choose a category: ({Fore.GREEN}H{Fore.RESET}) Housing, ({Fore.GREEN}T{Fore.RESET}) Transport, ({Fore.GREEN}F{Fore.RESET}) Food, ({Fore.GREEN}E{Fore.RESET}) Entertainment")
+
     while True:
         category_key = input("Enter the category:\n").upper()
         if category_key in categories:
@@ -140,9 +144,23 @@ def add_transaction():
         else:
             print(f"{Fore.RED}Description cannot be empty{Fore.RESET}. Please enter a valid description.")
 
-    worksheet = SHEET.worksheet("transactions")
-    worksheet.append_row([date, transaction_type, category, amount, description])
-    print(f"{Fore.GREEN}Transaction added successfully!{Fore.RESET}")
+    # Display transaction summary
+    print(f"\nTransaction Summary - Date: {Fore.GREEN}{date}{Fore.RESET} | Type: {Fore.GREEN}{transaction_type}{Fore.RESET} | "
+          f"Category: {Fore.GREEN}{category}{Fore.RESET} | Amount: {Fore.GREEN}{amount}{Fore.RESET} | Description: {Fore.GREEN}{description}{Fore.RESET}\n")
+
+    # Confirm save
+    while True:
+        confirm = input(f"Do you want to save this transaction? ({Fore.GREEN}Y{Fore.RESET}/{Fore.RED}N{Fore.RESET}): ").upper()
+        if confirm == 'Y':
+            worksheet = SHEET.worksheet("transactions")
+            worksheet.append_row([date, transaction_type, category, amount, description])
+            print(f"{Fore.GREEN}Transaction added successfully!{Fore.RESET}")
+            break
+        elif confirm == 'N':
+            print(f"{Fore.RED}Transaction not saved.{Fore.RESET}")
+            break
+        else:
+            print(f"{Fore.RED}Invalid choice{Fore.RESET}. Please enter ({Fore.GREEN}Y{Fore.RESET}) to save or ({Fore.RED}N{Fore.RESET}) to cancel.")
 
 
 def update_transaction():
