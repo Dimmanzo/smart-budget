@@ -231,79 +231,101 @@ def update_transaction():
             print(f"{Fore.RED}Invalid date format{Fore.RESET}. Please enter the date in "
                   f"{Fore.GREEN}YYYY-MM-DD{Fore.RESET} format.")
 
-    # Fetch transactions
+    # Fetch transactions and filter by date
     transactions = get_transactions()
     worksheet = SHEET.worksheet("transactions")
-    for i, transaction in enumerate(transactions):
-        if transaction["Date"] == date:
-            print(f"Found transaction: {Fore.GREEN}{transaction}{Fore.RESET}")
+    transactions_on_date = [t for t in transactions if t["Date"] == date]
 
-            # Prompt for new transaction type
-            while True:
-                transaction_type = input(
-                    f"Enter the new type ({Fore.GREEN}I{Fore.RESET}) Income, "
-                    f"({Fore.GREEN}E{Fore.RESET}) Expense:\n"
-                ).upper()
-                if transaction_type in ["I", "E"]:
-                    if transaction_type == "I":
-                        transaction_type = "income"
-                        categories = INCOME_CATEGORIES
-                        print(f"Transaction type set to: {Fore.GREEN}{transaction_type}{Fore.RESET}")
-                        print(f"Choose a new category: ({Fore.GREEN}W{Fore.RESET}) Wage, "
-                              f"({Fore.GREEN}S{Fore.RESET}) Savings, "
-                              f"({Fore.GREEN}O{Fore.RESET}) Other")
-                    else:
-                        transaction_type = "expense"
-                        categories = EXPENSE_CATEGORIES
-                        print(f"Transaction type set to: {Fore.GREEN}{transaction_type}{Fore.RESET}")
-                        print(f"Choose a new category: ({Fore.GREEN}H{Fore.RESET}) Housing, "
-                              f"({Fore.GREEN}T{Fore.RESET}) Transport, "
-                              f"({Fore.GREEN}F{Fore.RESET}) Food, "
-                              f"({Fore.GREEN}E{Fore.RESET}) Entertainment")
-                    break
-                else:
-                    print(f"{Fore.RED}Invalid type{Fore.RESET}. Please enter "
-                          f"({Fore.GREEN}I{Fore.RESET}) Income or ({Fore.GREEN}E{Fore.RESET}) Expense.")
+    if not transactions_on_date:
+        print(f"{Fore.RED}No transactions found on this date.{Fore.RESET}")
+        return
 
-            # Prompt for new category
-            while True:
-                category_key = input("Enter the new category:\n").upper()
-                if category_key in categories:
-                    category = categories[category_key]
-                    print(f"Category set to: {Fore.GREEN}{category}{Fore.RESET}")
-                    break
-                else:
-                    print(f"{Fore.RED}Invalid category{Fore.RESET}. Please choose from "
-                          f"{Fore.GREEN}{', '.join(categories.keys())}{Fore.RESET}.")
+    # Display transactions on the selected date
+    print("Transactions on this date:")
+    print(f"{Fore.CYAN}-{Fore.RESET}" * 40)
+    for idx, transaction in enumerate(transactions_on_date, start=1):
+        print(f"{idx}. Date: {Fore.GREEN}{transaction['Date']}{Fore.RESET} | Type: {Fore.GREEN}{transaction['Type']}{Fore.RESET} | "
+              f"Category: {Fore.GREEN}{transaction['Category']}{Fore.RESET} | Amount: {Fore.GREEN}{transaction['Amount']}{Fore.RESET} | "
+              f"Description: {Fore.GREEN}{transaction['Description']}{Fore.RESET}")
 
-            # Prompt for new amount
-            while True:
-                try:
-                    amount = float(input("Enter the new amount:\n"))
-                    if amount <= 0:
-                        raise ValueError(f"Amount must be a {Fore.GREEN}positive number{Fore.RESET}.")
-                    print(f"Amount set to: {Fore.GREEN}{amount}{Fore.RESET}")
-                    break
-                except ValueError as e:
-                    print(f"{Fore.RED}Invalid input!{Fore.RESET} Please enter a number for the amount.")
+    # Prompt for transaction number to update
+    while True:
+        try:
+            transaction_number = int(input("Enter the number of the transaction you want to update:\n"))
+            if 1 <= transaction_number <= len(transactions_on_date):
+                selected_transaction = transactions_on_date[transaction_number - 1]
+                break
+            else:
+                print(f"{Fore.RED}Invalid number{Fore.RESET}. Please enter a number between {Fore.GREEN}1{Fore.RESET} and {Fore.GREEN}{len(transactions_on_date)}{Fore.RESET}.")
+        except ValueError:
+            print(f"{Fore.RED}Invalid input{Fore.RESET}. Please enter a number.")
 
-            # Prompt for new description
-            while True:
-                description = input("Enter the new description:\n")
-                if description.strip():
-                    print(f"Description entered: {Fore.GREEN}{description}{Fore.RESET}")
-                    break
-                else:
-                    print(f"{Fore.RED}Description cannot be empty{Fore.RESET}. Please enter a valid description.")
+    # Display selected transaction details
+    print(f"Selected transaction: Date: {Fore.GREEN}{selected_transaction['Date']}{Fore.RESET} | "
+          f"Type: {Fore.GREEN}{selected_transaction['Type']}{Fore.RESET} | Category: {Fore.GREEN}{selected_transaction['Category']}{Fore.RESET} | "
+          f"Amount: {Fore.GREEN}{selected_transaction['Amount']}{Fore.RESET} | Description: {Fore.GREEN}{selected_transaction['Description']}{Fore.RESET}")
 
-            # Update transaction
-            worksheet.update(
-                range_name=f'A{i+2}:E{i+2}',
-                values=[[date, transaction_type, category, amount, description]]
-            )
-            print(f"{Fore.GREEN}Transaction updated successfully!{Fore.RESET}")
-            return
-    print(f"{Fore.RED}Transaction not found.{Fore.RESET}")
+    # Prompt for new transaction type
+    while True:
+        transaction_type = input(
+            f"Enter the new type ({Fore.GREEN}I{Fore.RESET}) Income, ({Fore.GREEN}E{Fore.RESET}) Expense:\n"
+        ).upper()
+        if transaction_type in ["I", "E"]:
+            if transaction_type == "I":
+                transaction_type = "income"
+                categories = INCOME_CATEGORIES
+            else:
+                transaction_type = "expense"
+                categories = EXPENSE_CATEGORIES
+            print(f"Transaction type set to: {Fore.GREEN}{transaction_type}{Fore.RESET}")
+            break
+        else:
+            print(f"{Fore.RED}Invalid type{Fore.RESET}. Please enter ({Fore.GREEN}I{Fore.RESET}) Income or ({Fore.GREEN}E{Fore.RESET}) Expense.")
+
+    # Prompt for new category
+    if transaction_type == "income":
+        print(f"Choose a new category: ({Fore.GREEN}W{Fore.RESET}) Wage, ({Fore.GREEN}S{Fore.RESET}) Savings, ({Fore.GREEN}O{Fore.RESET}) Other")
+    else:
+        print(f"Choose a new category: ({Fore.GREEN}H{Fore.RESET}) Housing, ({Fore.GREEN}T{Fore.RESET}) Transport, ({Fore.GREEN}F{Fore.RESET}) Food, ({Fore.GREEN}E{Fore.RESET}) Entertainment")
+
+    while True:
+        category_key = input("Enter the new category:\n").upper()
+        if category_key in categories:
+            category = categories[category_key]
+            print(f"Category set to: {Fore.GREEN}{category}{Fore.RESET}")
+            break
+        else:
+            print(f"{Fore.RED}Invalid category{Fore.RESET}. Please choose from {Fore.GREEN}{', '.join(categories.keys())}{Fore.RESET}.")
+
+    # Prompt for new amount
+    while True:
+        try:
+            amount = float(input("Enter the new amount:\n"))
+            if amount <= 0:
+                raise ValueError(f"Amount must be a {Fore.GREEN}positive number{Fore.RESET}.")
+            print(f"Amount set to: {Fore.GREEN}{amount}{Fore.RESET}")
+            break
+        except ValueError as e:
+            print(f"{Fore.RED}Invalid input!{Fore.RESET} {e} Please enter a number for the amount.")
+
+    # Prompt for new description
+    while True:
+        description = input("Enter the new description:\n")
+        if description.strip():
+            print(f"Description entered: {Fore.GREEN}{description}{Fore.RESET}")
+            break
+        else:
+            print(f"{Fore.RED}Description cannot be empty{Fore.RESET}. Please enter a valid description.")
+
+    # Find the index of the selected transaction in the original list
+    index = transactions.index(selected_transaction)
+
+    # Update transaction
+    worksheet.update(
+        range_name=f'A{index+2}:E{index+2}',
+        values=[[date, transaction_type, category, amount, description]]
+    )
+    print(f"{Fore.GREEN}Transaction updated successfully!{Fore.RESET}")
 
 
 def delete_transaction():
