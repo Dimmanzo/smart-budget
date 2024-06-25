@@ -11,6 +11,8 @@ __Note:__ Currently, this app is designed for $\color{green}{\textsf{single-user
 To make it as simple as possible for users, the app uses one-letter options to avoid typing long commands and prevent misspellings.
 Additionally, the colorama library is used for better visibility and an enhanced user experience.
 
+$\color{red}{\textsf{For test purposes, some transactions were added from 2024-01 to 2024-06.}}$
+
 
 ## Features
 
