@@ -6,16 +6,18 @@ Smart Budget is a user-friendly command-line app designed to help users manage t
 With this app, you can set spending limits for different categories, keep track of your transactions, and generate detailed financial reports. 
 Built with Python, it integrates with Google Sheets to store your data, ensuring it's always safe and easy to access.
 
-__Note:__ Currently, this app is designed for single-user usage. In future updates, an authentication function will be added to allow multiple users to manage their budgets independently.
+__Note:__ Currently, this app is designed for $\color{green}{\textsf{single-user}}$ usage. In future updates, an authentication function will be added to allow multiple users to manage their budgets independently.
 
 To make it as simple as possible for users, the app uses one-letter options to avoid typing long commands and prevent misspellings.
+Additionally, the colorama library is used for better visibility and an enhanced user experience.
+
 
 ## Features
 
 ### Existing Features
 
 - __Set Budget__
-  - Users can set budget limits for predefined categories (Housing, Transport, Food, Entertainment, Savings).
+  - Users can set budget limits for $\color{green}{\textsf{predefined}}$ categories (Housing, Transport, Food, Entertainment, Savings).
   - Error handling for invalid inputs and duplicate budget entries.
 
 - __Add Transaction__
@@ -46,14 +48,18 @@ To make it as simple as possible for users, the app uses one-letter options to a
 
 ### Features to be Added
 
-- __Enhanced Reporting__
-  - Include more detailed reports with monthly and yearly summaries.
-
-- __Transaction Categories__
+- __Budget Categories__
   - Allow users to define custom categories.
 
 - __User Authentication__
   - Add authentication to enable multiple users to manage their budgets independently.
+
+- __Notifications and Alerts__
+  - Set up notifications and alerts for budget limits, upcoming bills, and low balances.
+
+- __Advanced Search and Filter__
+  - Enhance the search and filter options to allow users to find specific transactions easily.
+
 
 ## Technologies Used
 
@@ -76,27 +82,32 @@ To make it as simple as possible for users, the app uses one-letter options to a
 | Update transaction with invalid input | Error message displayed | ✅ |
 | Delete transaction with valid date | Transaction deleted successfully | ✅ |
 | Delete transaction with invalid date | Error message displayed | ✅ |
-| View transactions | Transactions displayed | ✅ |
-| Generate report | Report displayed | ✅ |
+| View transactions (Month) | Transactions displayed | ✅ |
+| View transactions (Year) | Transactions displayed | ✅ |
+| Generate report (Month) | Report displayed successfully | ✅ |
+| Generate report (Year) | Report displayed successfully | ✅ |
 
 
 ## Bugs
 
 ### Solved Bugs
 
-- __Duplicate Transactions__: When adding a transaction, duplicates were being created. This was fixed by checking for existing transactions before adding new ones.
 - __Date Format Error__: Invalid date formats were causing incorrect inputs. Added error handling to ensure dates are in the correct format.
-- __Budget Overwrite__: Users were unable to overwrite existing budgets. Added a confirmation prompt to allow overwriting.
+- __Budget Set__: When setting a budget, duplicates were being created. This was fixed by checking for existing budgets before adding new ones or overwriting old ones.
+- __Incorrect Amount Inputs__: Users could input non-numeric or negative values for transaction amounts. Added validation to ensure only positive numeric values are accepted.
+- __Transaction Deletion Confirmation__: Transactions were deleted without confirmation. Added a confirmation prompt to prevent accidental deletions.
 
 ### Unfixed Bugs
 
 - No known unfixed bugs.
+
 
 ## Validator Testing
 
 - __Python Linter__: No errors found when passing through PEP8 linter.
 - __gspread__: Ensured no authorization errors with Google Sheets.
 - __Colorama__: Verified color output works across different terminal emulators.
+
 
 ## Deployment
 
@@ -123,6 +134,7 @@ The Smart Budget app was deployed on Heroku using [Code Institute P3 template](h
 
 The app should now be deployed and accessible from the [URL](https://smart-budget-48effdb642a1.herokuapp.com/) provided by Heroku.
 
+
 ## Cloning and Forking
 
 ### Cloning
@@ -142,6 +154,32 @@ The app should now be deployed and accessible from the [URL](https://smart-budge
   - Under "Owner," select the dropdown menu and click an owner for the forked repository.
   - Click Create fork.
 
+
+## Development Process
+
+- The development process is documented through regular commits with clear, descriptive messages.
+- Each feature or fix has a dedicated commit, ensuring a clear and understandable development history.
+
+
+## Screenshots
+
+### Main Menu
+
+![Menu](media/main-menu.png)
+
+### Transactions
+
+![T-Menu](media/t-menu-1.png)
+
+![T-Menu 2](media/t-menu-2.png)
+
+### Generate Report
+
+![Generate Report](media/g-report.png)
+
+![Report](media/report.png)
+
+
 ## Credits
 
 ### Content
@@ -153,7 +191,13 @@ The app should now be deployed and accessible from the [URL](https://smart-budge
 
 - No media files were used in this project.
 
+
 ## Acknowledgements
 
 - Special thanks to the instructors and mentors from [Code Institute](https://codeinstitute.net/) for their guidance and support.
 - Thanks to the contributors of the libraries used: `gspread`, `google-auth`, `datetime` and `colorama`.
+
+
+## Project Rationale
+
+This project was developed to provide users with a simple yet powerful tool for managing their finances. The goal was to create an application that is easy to use, integrates seamlessly with Google Sheets for data storage, and provides meaningful financial insights through detailed reports. The Smart Budget app aims to help users maintain control over their spending and achieve their financial goals.
