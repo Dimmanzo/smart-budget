@@ -60,6 +60,9 @@ Additionally, the colorama library is used for better visibility and an enhanced
 - __Advanced Search and Filter__
   - Enhance the search and filter options to allow users to find specific transactions easily.
 
+- __Automated backups__
+  - Implement a feature to regularly back up the Google Sheets data to a local file.
+
 
 ## Technologies Used
 
@@ -104,7 +107,8 @@ Additionally, the colorama library is used for better visibility and an enhanced
 
 ## Validator Testing
 
-- __Python Linter__: No errors found when passing through PEP8 linter.
+- __Python Linter__: There are some E501 line too long errors in the [CI Python Linter](https://pep8ci.herokuapp.com/).
+Efforts were made to make the lines as short as possible, but some errors were left for better readability.
 - __gspread__: Ensured no authorization errors with Google Sheets.
 - __Colorama__: Verified color output works across different terminal emulators.
 
