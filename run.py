@@ -237,6 +237,7 @@ def update_transaction():
     for i, transaction in enumerate(transactions):
         if transaction["Date"] == date:
             print(f"Found transaction: {Fore.GREEN}{transaction}{Fore.RESET}")
+
             # Prompt for new transaction type
             while True:
                 transaction_type = input(
@@ -247,17 +248,18 @@ def update_transaction():
                     if transaction_type == "I":
                         transaction_type = "income"
                         categories = INCOME_CATEGORIES
+                        print(f"Transaction type set to: {Fore.GREEN}{transaction_type}{Fore.RESET}")
                         print(f"Choose a new category: ({Fore.GREEN}W{Fore.RESET}) Wage, "
                               f"({Fore.GREEN}S{Fore.RESET}) Savings, "
                               f"({Fore.GREEN}O{Fore.RESET}) Other")
                     else:
                         transaction_type = "expense"
                         categories = EXPENSE_CATEGORIES
+                        print(f"Transaction type set to: {Fore.GREEN}{transaction_type}{Fore.RESET}")
                         print(f"Choose a new category: ({Fore.GREEN}H{Fore.RESET}) Housing, "
                               f"({Fore.GREEN}T{Fore.RESET}) Transport, "
                               f"({Fore.GREEN}F{Fore.RESET}) Food, "
                               f"({Fore.GREEN}E{Fore.RESET}) Entertainment")
-                    print(f"Transaction type set to: {Fore.GREEN}{transaction_type}{Fore.RESET}")
                     break
                 else:
                     print(f"{Fore.RED}Invalid type{Fore.RESET}. Please enter "
@@ -283,7 +285,7 @@ def update_transaction():
                     print(f"Amount set to: {Fore.GREEN}{amount}{Fore.RESET}")
                     break
                 except ValueError as e:
-                    print(f"{Fore.RED}Invalid input!{Fore.RESET} {e} Please enter a number for the amount.")
+                    print(f"{Fore.RED}Invalid input!{Fore.RESET} Please enter a number for the amount.")
 
             # Prompt for new description
             while True:
